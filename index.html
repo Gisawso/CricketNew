@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CricDeCode Pro | AI Cricket Telemetry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #070b14;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border-glow: rgba(0, 230, 118, 0.25);
+            --accent-green: #00e676;
+            --accent-blue: #00b0ff;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at top center, #111c33 0%, var(--bg-dark) 65%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 8%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+        }
+        .logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #fff;
+        }
+        .logo span { color: var(--accent-green); }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 90px 8% 70px;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+        .pill {
+            display: inline-block;
+            background: rgba(0, 230, 118, 0.12);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-green);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            line-height: 1.05;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 650px;
+            margin: 0 auto 38px;
+        }
+
+        /* CTA Buttons */
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+            color: #05080f;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 14px 34px;
+            border-radius: 10px;
+            text-decoration: none;
+            letter-spacing: 1px;
+            box-shadow: 0 0 25px rgba(0, 230, 118, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 35px rgba(0, 230, 118, 0.65);
+        }
+        .btn-secondary {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); }
+
+        /* Feature Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            padding: 40px 8% 90px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+        }
+        .card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 14px;
+        }
+        .card h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">CRICDECODE <span>PRO</span></div>
+        <a href="YOUR_STREAMLIT_APP_URL_HERE" target="_blank" class="btn-secondary" style="padding: 8px 18px; font-size: 0.95rem;">Launch App ↗</a>
+    </nav>
+
+    <section class="hero">
+        <div class="pill">● COMPUTER VISION CRICKET ANALYTICS</div>
+        <h1>Broadcast-Grade Bowling Telemetry From Any Phone</h1>
+        <p>Analyze net session footage with computer vision. Track delivery speed, bounce coordinates, and Hawk-Eye style pitch maps in seconds.</p>
+        <div class="btn-group">
+            <!-- REPLACE THE HREF BELOW WITH YOUR STREAMLIT URL -->
+            <a href="YOUR_STREAMLIT_APP_URL_HERE" target="_blank" class="btn-primary">⚡ LAUNCH LIVE ANALYZER</a>
+            <a href="#features" class="btn-secondary">Explore Telemetry</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="card">
+            <div class="card-icon">🚀</div>
+            <h3>Delivery Velocity</h3>
+            <p>Frame-by-frame trajectory tracking calculates release-to-crease ball speed in both KM/H and MPH.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🎯</div>
+            <h3>Line & Length Detection</h3>
+            <p>Automatically detects the exact bounce point to classify Yorkers, Good Length, Off-Stump, and more.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">📊</div>
+            <h3>Hawk-Eye Pitch Map</h3>
+            <p>Plots every delivery onto a visual turf map and logs session averages so you can track spell consistency.</p>
+        </div>
+    </section>
+
+    <footer>
+        Built with Python, OpenCV & Streamlit • CricDeCode Local Telemetry Engine
+    </footer>
+
+</body>
+</html>

@@ -168,15 +168,18 @@
             const password = document.getElementById('password').value;
 
             if (currentMode === 'signup') {
-                const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) return showMessage(error.message);
+                // 1. Sign up user via Supabase Auth
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+                if (authError) return showMessage(authError.message);
 
+                // 2. Insert record into 'profiles' table explicitly passing email and is_approved
                 const { error: profileError } = await supabaseClient
                     .from('profiles')
                     .insert([{ email: email, is_approved: false }]);
 
                 if (profileError) {
-                    console.error('Profile insertion error:', profileError.message);
+                    console.error('Profile insertion error details:', profileError);
+                    return showMessage('Auth succeeded, but profile row failed: ' + profileError.message);
                 }
 
                 showMessage('✅ Account created successfully! Please wait for owner approval.', true);

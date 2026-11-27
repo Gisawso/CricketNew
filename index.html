@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Access · CricDeCode</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Supabase JavaScript SDK CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -64,7 +66,7 @@
 </head>
 <body>
 
-    <div class="auth-card">
+    <div class="auth-card" id="card-container">
         <h1 id="form-title">Sign in</h1>
         <div id="form-subtitle" class="subtitle">Enter your credentials to access your account.</div>
 
@@ -98,7 +100,19 @@
         </div>
     </div>
 
+    <!-- MAIN APP DASHBOARD (Hidden until logged in and approved) -->
+    <div id="app-container" class="auth-card hidden" style="max-width: 600px; text-align: center;">
+        <h1>🎉 Welcome to CricDeCode!</h1>
+        <p class="subtitle" id="user-welcome-text">You are successfully authenticated and approved.</p>
+        <button onclick="handleLogout()" class="btn-main" style="background-color: #ef4444;">Sign out</button>
+    </div>
+
     <script>
+        // Initialize Supabase Client
+        const supabaseUrl = 'https://emmcgjealocvkwrfcuxq.supabase.co';
+        const supabaseKey = 'sb_publishable_WTxFPnYEG1NgPMV-xaa8Hw_E60a1...'; // Replace with your complete publishable key if needed
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
         let currentMode = 'signin'; // options: 'signin', 'signup', 'forgot'
 
         function switchToView(mode) {
@@ -141,23 +155,73 @@
             }
         }
 
-        function handleFormSubmit(event) {
+        function showMessage(text, isSuccess = false) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.className = isSuccess ? 'alert success' : 'alert';
+            alertBox.innerText = text;
+            alertBox.classList.remove('hidden');
+        }
+
+        async function handleFormSubmit(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
-            const alertBox = document.getElementById('alert-box');
+            const password = document.getElementById('password').value;
 
-            alertBox.classList.remove('hidden');
-            
-            if (currentMode === 'signin') {
-                alertBox.className = 'alert';
-                alertBox.innerText = `Connecting to authentication backend for ${email}... (Plug in Supabase/Firebase SDK here)`;
-            } else if (currentMode === 'signup') {
-                alertBox.className = 'alert success';
-                alertBox.innerText = `Account created for ${email}! Pending admin approval.`;
+            if (currentMode === 'signup') {
+                // 1. Sign up user via Supabase Auth
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) return showMessage(error.message);
+
+                // 2. Insert record into 'profiles' table with is_approved: false
+                const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .insert([{ email: email, is_approved: false }]);
+
+                if (profileError) {
+                    console.error('Profile insertion error:', profileError.message);
+                }
+
+                showMessage('✅ Account created successfully! Please wait for owner approval.', true);
+
+            } else if (currentMode === 'signin') {
+                // 1. Authenticate sign-in credentials
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) return showMessage(error.message);
+
+                // 2. Check approval status in the 'profiles' table
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('is_approved')
+                    .eq('email', email)
+                    .single();
+
+                if (profile && profile.is_approved === true) {
+                    // Approved: Switch view to dashboard
+                    document.getElementById('card-container').classList.add('hidden');
+                    document.getElementById('app-container').classList.remove('hidden');
+                    document.getElementById('user-welcome-text').innerText = `Welcome back, ${email}! You have full access.`;
+                } else {
+                    // Not approved yet: Sign them out and alert
+                    await supabaseClient.auth.signOut();
+                    showMessage('⏳ Your account is pending owner approval. Please check back later.');
+                }
+
             } else if (currentMode === 'forgot') {
-                alertBox.className = 'alert success';
-                alertBox.innerText = `Password reset instructions sent to ${email}.`;
+                // Send password reset email
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: 'https://gisawso.github.io/CricketNew/'
+                });
+                if (error) return showMessage(error.message);
+                showMessage('📧 Password reset link sent to your email!', true);
             }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('card-container').classList.remove('hidden');
+            document.getElementById('auth-form').reset();
+            switchToView('signin');
         }
     </script>
 </body>

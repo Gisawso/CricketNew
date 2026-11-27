@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Analyzer | Live Telemetry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #070b14;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border-glow: rgba(0, 230, 118, 0.25);
+            --accent-green: #00e676;
+            --accent-blue: #00b0ff;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: radial-gradient(circle at top center, #111c33 0%, var(--bg-dark) 65%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        input:focus { outline: none; border-color: var(--accent-green); }
+        .btn {
+            width: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+            color: #05080f;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        .hidden { display: none !important; }
+        .dashboard { width: 100%; max-width: 800px; }
+        .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .metric-card { background: rgba(255,255,255,0.04); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-align: center; }
+        .metric-card h4 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+        .metric-card div { font-size: 1.5rem; font-family: 'Rajdhani', sans-serif; color: var(--accent-green); font-weight: 700; }
+        .back-link { display: inline-block; margin-top: 20px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+        .back-link:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN & SIGNUP SCREEN -->
+    <div id="auth-screen" class="container">
+        <h2>CricDeCode Portal</h2>
+        <p>Sign in or request access to launch the telemetry engine.</p>
+        
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+        <button class="btn" onclick="handleLogin()">Sign In / Launch</button>
+        <a href="index.html" class="back-link">← Back to Showcase Home</a>
+    </div>
+
+    <!-- MAIN TELEMETRY APP (Hidden until login) -->
+    <div id="app-screen" class="container dashboard hidden">
+        <h2 id="welcome-msg">Telemetry Dashboard</h2>
+        <p>Live session analyzer active via GitHub Pages.</p>
+        
+        <div class="metric-grid">
+            <div class="metric-card">
+                <h4>Delivery Speed</h4>
+                <div>134.8 KM/H</div>
+            </div>
+            <div class="metric-card">
+                <h4>Impact Distance</h4>
+                <div>6.25 m</div>
+            </div>
+            <div class="metric-card">
+                <h4>Length</h4>
+                <div>Good Length</div>
+            </div>
+        </div>
+
+        <button class="btn" style="background: #ef4444; color: #fff; margin-top: 30px;" onclick="handleLogout()">Log Out</button>
+    </div>
+
+    <script>
+        function handleLogin() {
+            const user = document.getElementById('username').value.trim();
+            if(user) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('welcome-msg').innerText = `Welcome, ${user}!`;
+            } else {
+                alert('Please enter a username.');
+            }
+        }
+        function handleLogout() {
+            document.getElementById('app-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+    </script>
+</body>
+</html>

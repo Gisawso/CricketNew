@@ -179,10 +179,13 @@
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) return showMessage(error.message);
 
+                // Add .toLowerCase() here to match your database cleanly:
+                const cleanEmail = email.trim().toLowerCase();
+
                 const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
                     .select('is_approved')
-                    .eq('email', email)
+                    .eq('email', cleanEmail)
                     .single();
 
                 if (profile && profile.is_approved === true) {

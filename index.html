@@ -102,7 +102,7 @@
 
     <!-- MAIN APP DASHBOARD (Hidden until logged in and approved) -->
     <div id="app-container" class="auth-card hidden" style="max-width: 600px; text-align: center;">
-        <h1>🎉 Welcome to CricDeCode!</h1>
+        <h1>🎉 Welcome to Cricket Analyzer!</h1>
         <p class="subtitle" id="user-welcome-text">You are successfully authenticated and approved.</p>
         <button onclick="handleLogout()" class="btn-main" style="background-color: #ef4444;">Sign out</button>
     </div>
@@ -110,10 +110,10 @@
     <script>
         // Initialize Supabase Client
         const supabaseUrl = 'https://emmcgjealocvkwrfcuxq.supabase.co';
-        const supabaseKey = 'sb_publishable_WTxFPnYEG1NgPMV-xaa8Hw_E6Oa1TqN'; // Replace with your complete publishable key if needed
+        const supabaseKey = 'sb_publishable_WTxFPnYEG1NgPMV-xaa8Hw_E6Oa1TqN';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        let currentMode = 'signin'; // options: 'signin', 'signup', 'forgot'
+        let currentMode = 'signin';
 
         function switchToView(mode) {
             currentMode = mode;
@@ -168,11 +168,9 @@
             const password = document.getElementById('password').value;
 
             if (currentMode === 'signup') {
-                // 1. Sign up user via Supabase Auth
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
                 if (error) return showMessage(error.message);
 
-                // 2. Insert record into 'profiles' table with is_approved: false
                 const { error: profileError } = await supabaseClient
                     .from('profiles')
                     .insert([{ email: email, is_approved: false }]);
@@ -184,11 +182,9 @@
                 showMessage('✅ Account created successfully! Please wait for owner approval.', true);
 
             } else if (currentMode === 'signin') {
-                // 1. Authenticate sign-in credentials
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) return showMessage(error.message);
 
-                // 2. Check approval status in the 'profiles' table
                 const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
                     .select('is_approved')
@@ -196,18 +192,15 @@
                     .single();
 
                 if (profile && profile.is_approved === true) {
-                    // Approved: Switch view to dashboard
                     document.getElementById('card-container').classList.add('hidden');
                     document.getElementById('app-container').classList.remove('hidden');
                     document.getElementById('user-welcome-text').innerText = `Welcome back, ${email}! You have full access.`;
                 } else {
-                    // Not approved yet: Sign them out and alert
                     await supabaseClient.auth.signOut();
                     showMessage('⏳ Your account is pending owner approval. Please check back later.');
                 }
 
             } else if (currentMode === 'forgot') {
-                // Send password reset email
                 const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
                     redirectTo: 'https://gisawso.github.io/CricketNew/'
                 });

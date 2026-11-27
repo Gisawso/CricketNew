@@ -174,7 +174,7 @@
 
             showMessage('✅ Account created successfully! Please wait for owner approval.', true);
 
-        } else if (currentMode === 'signin') {
+        } if (currentMode === 'signin') {
             try {
                 const cleanEmail = email.trim().toLowerCase();
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ 

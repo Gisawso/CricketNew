@@ -110,7 +110,7 @@
     <script>
         // Initialize Supabase Client
         const supabaseUrl = 'https://emmcgjealocvkwrfcuxq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtbWNnamVhbG9jdmt3cmZjdXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU3ODM2NDQsImV4cCI6MjExMTM1OTY0NH0.KwdHBtwIEBn0fFCE6S6fBZy5agqC4gh-31Scnx066Zw';
+        const supabaseKey = 'sb_publishable_WTxFPnYEG1NgPMV-xaa8Hw_E6Oa1TqN';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         let currentMode = 'signin';
@@ -168,37 +168,44 @@
             const password = document.getElementById('password').value;
 
             if (currentMode === 'signup') {
-    // 1. Sign up user via Supabase Auth (Trigger handles profiles table automatically)
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) return showMessage(error.message);
-
-    showMessage('✅ Account created successfully! Please wait for owner approval.', true);
-}
-
-            } else if (currentMode === 'signin') {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                const cleanEmail = email.trim().toLowerCase();
+                const { data, error } = await supabaseClient.auth.signUp({ email: cleanEmail, password });
                 if (error) return showMessage(error.message);
 
-                // Add .toLowerCase() here to match your database cleanly:
-                const cleanEmail = email.trim().toLowerCase();
+                showMessage('✅ Account created successfully! Please wait for owner approval.', true);
 
-                const { data: profile, error: profileError } = await supabaseClient
-                    .from('profiles')
-                    .select('is_approved')
-                    .eq('email', cleanEmail)
-                    .single();
+            } else if (currentMode === 'signin') {
+                try {
+                    const cleanEmail = email.trim().toLowerCase();
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ 
+                        email: cleanEmail, 
+                        password 
+                    });
+                    
+                    if (error) return showMessage(error.message);
 
-                if (profile && profile.is_approved === true) {
-                    document.getElementById('card-container').classList.add('hidden');
-                    document.getElementById('app-container').classList.remove('hidden');
-                    document.getElementById('user-welcome-text').innerText = `Welcome back, ${email}! You have full access.`;
-                } else {
-                    await supabaseClient.auth.signOut();
-                    showMessage('⏳ Your account is pending owner approval. Please check back later.');
+                    const { data: profile, error: profileError } = await supabaseClient
+                        .from('profiles')
+                        .select('is_approved')
+                        .eq('email', cleanEmail)
+                        .single();
+
+                    if (profile && profile.is_approved === true) {
+                        document.getElementById('card-container').classList.add('hidden');
+                        document.getElementById('app-container').classList.remove('hidden');
+                        document.getElementById('user-welcome-text').innerText = `Welcome back, ${email}! You have full access.`;
+                    } else {
+                        await supabaseClient.auth.signOut();
+                        showMessage('⏳ Your account is pending owner approval. Please check back later.');
+                    }
+                } catch (err) {
+                    console.error('Sign-in exception:', err);
+                    showMessage('An unexpected error occurred during sign-in.');
                 }
 
             } else if (currentMode === 'forgot') {
-                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                const cleanEmail = email.trim().toLowerCase();
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(cleanEmail, {
                     redirectTo: 'https://gisawso.github.io/CricketNew/'
                 });
                 if (error) return showMessage(error.message);

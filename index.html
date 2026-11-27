@@ -163,55 +163,55 @@
         }
 
         async function handleFormSubmit(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-            if (currentMode === 'signup') {
+        if (currentMode === 'signup') {
+            const cleanEmail = email.trim().toLowerCase();
+            const { data, error } = await supabaseClient.auth.signUp({ email: cleanEmail, password });
+            if (error) return showMessage(error.message);
+
+            showMessage('✅ Account created successfully! Please wait for owner approval.', true);
+
+        } else if (currentMode === 'signin') {
+            try {
                 const cleanEmail = email.trim().toLowerCase();
-                const { data, error } = await supabaseClient.auth.signUp({ email: cleanEmail, password });
-                if (error) return showMessage(error.message);
-
-                showMessage('✅ Account created successfully! Please wait for owner approval.', true);
-
-            } else if (currentMode === 'signin') {
-                try {
-                    const cleanEmail = email.trim().toLowerCase();
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ 
-                        email: cleanEmail, 
-                        password 
-                    });
-                    
-                    if (error) return showMessage(error.message);
-
-                    const { data: profile, error: profileError } = await supabaseClient
-                        .from('profiles')
-                        .select('is_approved')
-                        .eq('email', cleanEmail)
-                        .single();
-
-                    if (profile && profile.is_approved === true) {
-                        document.getElementById('card-container').classList.add('hidden');
-                        document.getElementById('app-container').classList.remove('hidden');
-                        document.getElementById('user-welcome-text').innerText = `Welcome back, ${email}! You have full access.`;
-                    } else {
-                        await supabaseClient.auth.signOut();
-                        showMessage('⏳ Your account is pending owner approval. Please check back later.');
-                    }
-                } catch (err) {
-                    console.error('Sign-in exception:', err);
-                    showMessage('An unexpected error occurred during sign-in.');
-                }
-
-            } else if (currentMode === 'forgot') {
-                const cleanEmail = email.trim().toLowerCase();
-                const { error } = await supabaseClient.auth.resetPasswordForEmail(cleanEmail, {
-                    redirectTo: 'https://gisawso.github.io/CricketNew/'
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ 
+                    email: cleanEmail, 
+                    password 
                 });
+                
                 if (error) return showMessage(error.message);
-                showMessage('📧 Password reset link sent to your email!', true);
+
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('is_approved')
+                    .eq('email', cleanEmail)
+                    .single();
+
+                if (profile && profile.is_approved === true) {
+                    document.getElementById('card-container').classList.add('hidden');
+                    document.getElementById('app-container').classList.remove('hidden');
+                    document.getElementById('user-welcome-text').innerText = `Welcome back, ${email}! You have full access.`;
+                } else {
+                    await supabaseClient.auth.signOut();
+                    showMessage('⏳ Your account is pending owner approval. Please check back later.');
+                }
+            } catch (err) {
+                console.error('Sign-in exception:', err);
+                showMessage('An unexpected error occurred during sign-in.');
             }
+
+        } else if (currentMode === 'forgot') {
+            const cleanEmail = email.trim().toLowerCase();
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(cleanEmail, {
+                redirectTo: 'https://gisawso.github.io/CricketNew/'
+            });
+            if (error) return showMessage(error.message);
+            showMessage('📧 Password reset link sent to your email!', true);
         }
+    }
 
         async function handleLogout() {
             await supabaseClient.auth.signOut();
